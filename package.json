@@ -1,0 +1,39 @@
+{
+  "name": "portfolio-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack cinematic dark portfolio with admin CMS and contact form",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,client -c gray,white \"npm run server\" \"npm run client\"",
+    "server": "node server/index.js",
+    "client": "vite --config client/vite.config.js",
+    "build": "vite build --config client/vite.config.js",
+    "vercel-build": "npm run build",
+    "start": "node server/index.js",
+    "seed": "node server/seed.js"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "framer-motion": "^11.15.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.3.0",
+    "nodemailer": "^6.9.16",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.4.0",
+    "uuid": "^11.0.3",
+    "vite": "^6.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
