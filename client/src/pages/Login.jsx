@@ -37,6 +37,7 @@ export default function Login({ onSuccess }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              placeholder="Enter your email"
             />
           </div>
           <div className="field">
@@ -47,7 +48,7 @@ export default function Login({ onSuccess }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="From .env ADMIN_PASSWORD"
+              placeholder="Enter your password"
             />
           </div>
         </div>
