@@ -167,7 +167,7 @@ export default function Contact({ content }) {
                 name="subject"
                 value={form.subject}
                 onChange={onChange}
-                placeholder="Project inquiry"
+                placeholder="Your Query"
               />
             </div>
             <div className="field">
@@ -178,7 +178,7 @@ export default function Contact({ content }) {
                 value={form.message}
                 onChange={onChange}
                 required
-                placeholder="Tell me about your project..."
+                placeholder="Feel free to ask anything!"
               />
             </div>
 

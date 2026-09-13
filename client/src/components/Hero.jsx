@@ -73,12 +73,7 @@ export default function Hero({ content }) {
             </div>
           </motion.div>
         </motion.div>
-      </div>
-
-      <div className="hero__scroll" aria-hidden>
-        Scroll
-        <div className="hero__scroll-line" />
-      </div>
+      </div>    
     </section>
   );
 }

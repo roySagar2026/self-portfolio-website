@@ -4,9 +4,9 @@ export default function Footer({ name }) {
     <footer className="footer">
       <div className="container footer__inner">
         <p>
-          © {year} <strong>{name || 'Portfolio'}</strong> — crafted in monochrome.
+          © {year} <strong>{name || 'Portfolio'}</strong> — Building with purpose.
         </p>
-        <p>Dark theme · Smooth scroll · Live CMS</p>
+        <p>Software Engineering · Systems · AI · C++</p>
       </div>
     </footer>
   );

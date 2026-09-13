@@ -78,7 +78,7 @@ export default function Navbar({ name, activeSection, resumeAvailable }) {
           }}
         >
           {brand}
-          <span> / folio</span>
+          <span> / systems</span>
         </a>
 
         <button
