@@ -1,12 +1,9 @@
-import fs from 'fs';
-import path from 'path';
 import { Router } from 'express';
 import multer from 'multer';
-import { readJson, writeJson, DATA_DIR } from '../db.js';
+import { readJson, writeJson, deleteJson } from '../db.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
-const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 
 const ALLOWED = new Set([
   'application/pdf',
@@ -14,44 +11,21 @@ const ALLOWED = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ]);
 
-const EXT_BY_MIME = {
-  'application/pdf': '.pdf',
-  'application/msword': '.doc',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
-};
-
-function ensureUploadDir() {
-  if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-  }
+function getResumeMeta(content) {
+  return (
+    content.profile?.resume || {
+      available: false,
+      fileName: null,
+      originalName: null,
+      uploadedAt: null,
+    }
+  );
 }
 
-function getResumeMeta(content = readJson('content.json', {})) {
-  return content.profile?.resume || {
-    available: false,
-    fileName: null,
-    originalName: null,
-    uploadedAt: null,
-  };
-}
-
-function resumePath(fileName) {
-  return path.join(UPLOAD_DIR, fileName);
-}
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    ensureUploadDir();
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (_req, file, cb) => {
-    const ext = EXT_BY_MIME[file.mimetype] || path.extname(file.originalname).toLowerCase() || '.pdf';
-    cb(null, `resume${ext}`);
-  },
-});
-
+// Files are small (5MB cap) so we keep them in memory just long enough to
+// base64-encode them into Postgres — no disk writes, so nothing to lose on redeploy.
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if (ALLOWED.has(file.mimetype)) {
@@ -62,32 +36,36 @@ const upload = multer({
   },
 });
 
-router.get('/', (req, res) => {
-  const content = readJson('content.json', {});
+router.get('/', async (_req, res) => {
+  const content = await readJson('content.json', {});
   const meta = getResumeMeta(content);
 
-  if (!meta.available || !meta.fileName) {
+  if (!meta.available) {
     return res.status(404).json({ error: 'Resume not uploaded yet' });
   }
 
-  const file = resumePath(meta.fileName);
-  if (!fs.existsSync(file)) {
+  const file = await readJson('resume_file.json', null);
+  if (!file?.dataBase64) {
     return res.status(404).json({ error: 'Resume file missing' });
   }
 
   const downloadName =
     meta.originalName ||
-    `${(content.profile?.name || 'Resume').replace(/\s+/g, '_')}_Resume${path.extname(meta.fileName)}`;
+    `${(content.profile?.name || 'Resume').replace(/\s+/g, '_')}_Resume`;
 
-  res.download(file, downloadName);
+  const buffer = Buffer.from(file.dataBase64, 'base64');
+  res.set('Content-Type', file.mimeType || 'application/octet-stream');
+  res.set('Content-Disposition', `attachment; filename="${downloadName}"`);
+  res.send(buffer);
 });
 
-router.get('/status', (_req, res) => {
-  res.json(getResumeMeta());
+router.get('/status', async (_req, res) => {
+  const content = await readJson('content.json', {});
+  res.json(getResumeMeta(content));
 });
 
 router.post('/upload', requireAuth, (req, res) => {
-  upload.single('resume')(req, res, (err) => {
+  upload.single('resume')(req, res, async (err) => {
     if (err) {
       const message =
         err.code === 'LIMIT_FILE_SIZE'
@@ -100,44 +78,35 @@ router.post('/upload', requireAuth, (req, res) => {
       return res.status(400).json({ error: 'Please choose a resume file' });
     }
 
-    const content = readJson('content.json', {});
+    const content = await readJson('content.json', {});
     if (!content.profile) content.profile = {};
 
-    // Remove previous resume files with other extensions
-    ensureUploadDir();
-    for (const name of fs.readdirSync(UPLOAD_DIR)) {
-      if (name.startsWith('resume') && name !== req.file.filename) {
-        try {
-          fs.unlinkSync(path.join(UPLOAD_DIR, name));
-        } catch {
-          /* ignore */
-        }
-      }
-    }
+    await writeJson('resume_file.json', {
+      dataBase64: req.file.buffer.toString('base64'),
+      mimeType: req.file.mimetype,
+      originalName: req.file.originalname,
+      size: req.file.size,
+    });
 
     content.profile.resume = {
       available: true,
-      fileName: req.file.filename,
+      fileName: `resume-${Date.now()}`,
       originalName: req.file.originalname,
       uploadedAt: new Date().toISOString(),
       size: req.file.size,
       mimeType: req.file.mimetype,
     };
     content.profile.resumeUrl = '/api/resume';
-    writeJson('content.json', content);
+    await writeJson('content.json', content);
 
     res.json({ ok: true, resume: content.profile.resume, content });
   });
 });
 
-router.delete('/', requireAuth, (req, res) => {
-  const content = readJson('content.json', {});
-  const meta = getResumeMeta(content);
+router.delete('/', requireAuth, async (req, res) => {
+  const content = await readJson('content.json', {});
 
-  if (meta.fileName) {
-    const file = resumePath(meta.fileName);
-    if (fs.existsSync(file)) fs.unlinkSync(file);
-  }
+  await deleteJson('resume_file.json');
 
   if (!content.profile) content.profile = {};
   content.profile.resume = {
@@ -147,7 +116,7 @@ router.delete('/', requireAuth, (req, res) => {
     uploadedAt: null,
   };
   content.profile.resumeUrl = '';
-  writeJson('content.json', content);
+  await writeJson('content.json', content);
 
   res.json({ ok: true, content });
 });

@@ -25,15 +25,15 @@ function parseOrigins() {
     .filter(Boolean);
 }
 
-function ensureAdminSeed() {
-  const existing = readJson('admin.json', null);
+async function ensureAdminSeed() {
+  const existing = await readJson('admin.json', null);
   const email = process.env.ADMIN_EMAIL || 'admin@portfolio.local';
   const password = process.env.ADMIN_PASSWORD || 'ChangeMe123!';
   const force = String(process.env.RESEED_ADMIN || '').toLowerCase() === 'true';
 
   if (existing?.passwordHash && !force) return;
 
-  writeJson('admin.json', {
+  await writeJson('admin.json', {
     email,
     passwordHash: bcrypt.hashSync(password, 10),
     updatedAt: new Date().toISOString(),
@@ -41,7 +41,7 @@ function ensureAdminSeed() {
   console.log(`Admin account ${force ? 're-seeded' : 'ready'} → ${email}`);
 }
 
-ensureAdminSeed();
+await ensureAdminSeed();
 
 const allowedOrigins = parseOrigins();
 

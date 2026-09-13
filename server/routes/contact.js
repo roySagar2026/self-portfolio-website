@@ -77,9 +77,9 @@ router.post('/', contactLimiter, async (req, res) => {
     createdAt: new Date().toISOString(),
   };
 
-  const messages = readJson('messages.json', []);
+  const messages = await readJson('messages.json', []);
   messages.unshift(entry);
-  writeJson('messages.json', messages);
+  await writeJson('messages.json', messages);
 
   try {
     const mail = await maybeSendEmail(entry);
@@ -100,27 +100,27 @@ router.post('/', contactLimiter, async (req, res) => {
   }
 });
 
-router.get('/messages', requireAuth, (_req, res) => {
-  const messages = readJson('messages.json', []);
+router.get('/messages', requireAuth, async (_req, res) => {
+  const messages = await readJson('messages.json', []);
   res.json(messages);
 });
 
-router.patch('/messages/:id/read', requireAuth, (req, res) => {
-  const messages = readJson('messages.json', []);
+router.patch('/messages/:id/read', requireAuth, async (req, res) => {
+  const messages = await readJson('messages.json', []);
   const idx = messages.findIndex((m) => m.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Message not found' });
   messages[idx].read = true;
-  writeJson('messages.json', messages);
+  await writeJson('messages.json', messages);
   res.json(messages[idx]);
 });
 
-router.delete('/messages/:id', requireAuth, (req, res) => {
-  const messages = readJson('messages.json', []);
+router.delete('/messages/:id', requireAuth, async (req, res) => {
+  const messages = await readJson('messages.json', []);
   const next = messages.filter((m) => m.id !== req.params.id);
   if (next.length === messages.length) {
     return res.status(404).json({ error: 'Message not found' });
   }
-  writeJson('messages.json', next);
+  await writeJson('messages.json', next);
   res.json({ ok: true });
 });
 

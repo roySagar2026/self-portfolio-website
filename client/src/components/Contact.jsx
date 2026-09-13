@@ -27,14 +27,27 @@ export default function Contact({ content }) {
     e.preventDefault();
     setSending(true);
     setStatus({ type: '', text: '' });
+
+    // Render's free tier sleeps after ~15 min idle — the first request can
+    // take up to a minute to wake it back up. Let the visitor know what's
+    // happening instead of leaving them staring at "Sending…" with no context.
+    const wakingTimer = setTimeout(() => {
+      setStatus({
+        type: 'wait',
+        text: "Still sending… the server may be waking up after being idle. This can take up to a minute — no need to resubmit.",
+      });
+    }, 6000);
+
     try {
       await api.sendContact(form);
+      clearTimeout(wakingTimer);
       setStatus({
         type: 'ok',
         text: contact.successMessage || 'Message sent successfully.',
       });
       setForm({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
+      clearTimeout(wakingTimer);
       setStatus({ type: 'err', text: err.message || 'Failed to send message.' });
     } finally {
       setSending(false);

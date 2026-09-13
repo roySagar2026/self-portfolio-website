@@ -5,8 +5,8 @@ import { readJson, writeJson } from '../db.js';
 
 const router = Router();
 
-function ensureAdmin() {
-  const existing = readJson('admin.json', null);
+async function ensureAdmin() {
+  const existing = await readJson('admin.json', null);
   if (existing?.passwordHash) return existing;
 
   const email = process.env.ADMIN_EMAIL || 'admin@portfolio.local';
@@ -16,17 +16,17 @@ function ensureAdmin() {
     passwordHash: bcrypt.hashSync(password, 10),
     updatedAt: new Date().toISOString(),
   };
-  writeJson('admin.json', admin);
+  await writeJson('admin.json', admin);
   return admin;
 }
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
-  const admin = ensureAdmin();
+  const admin = await ensureAdmin();
   const ok =
     email.toLowerCase() === String(admin.email).toLowerCase() &&
     bcrypt.compareSync(password, admin.passwordHash);
