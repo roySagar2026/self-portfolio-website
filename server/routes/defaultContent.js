@@ -1,0 +1,148 @@
+export const defaultContent = {
+  profile: {
+    name: "Alex Rivera",
+    role: "Fresher · Computer Science Student",
+    tagline: "Learning to craft clean, cinematic web experiences.",
+    location: "Campus · Remote-friendly",
+    availability: "Open to internships & entry-level roles",
+    email: "hello@alexrivera.dev",
+    phone: "+1 (555) 014-2098",
+    resumeUrl: "/api/resume",
+    resume: {
+      available: false,
+      fileName: null,
+      originalName: null,
+      uploadedAt: null
+    },
+    socials: {
+      github: "https://github.com",
+      linkedin: "https://linkedin.com",
+      twitter: "https://x.com",
+      dribbble: "https://dribbble.com"
+    }
+  },
+  hero: {
+    eyebrow: "Student Portfolio 2026",
+    headline: "Learn. Build. Grow.",
+    subheadline: "A fresher college student exploring full-stack development — curious, hands-on, and ready to learn.",
+    ctaPrimary: "View Projects",
+    ctaSecondary: "Contact Me"
+  },
+  about: {
+    title: "About",
+    lead: "I'm a fresher college student stepping into tech — curious, motivated, and building every day.",
+    body: "Currently pursuing my degree while learning web development through coursework, personal projects, and online practice. I'm focused on frontend and full-stack basics, writing clean code, and turning ideas into simple, polished websites. I'm looking for internships or entry-level opportunities where I can learn from a real team and contribute with energy and consistency.",
+    highlights: [
+      "Fresher · college student starting my tech journey",
+      "Learning React, Node.js, and modern web basics",
+      "Building personal projects to grow real skills",
+      "Eager for internships & beginner-friendly roles"
+    ],
+    stats: [
+      { label: "Projects", value: "8+" },
+      { label: "Year", value: "1st" },
+      { label: "Focus", value: "Web" },
+      { label: "Goal", value: "Intern" }
+    ]
+  },
+  skills: {
+    title: "Skills",
+    subtitle: "Skills I'm learning and practicing through college and personal projects.",
+    groups: [
+      {
+        name: "Frontend",
+        items: [
+          { name: "React" },
+          { name: "Next.js" },
+          { name: "TypeScript" },
+          { name: "JavaScript" },
+          { name: "HTML5" },
+          { name: "CSS3" },
+          { name: "Tailwind CSS" },
+          { name: "Framer Motion" }
+        ]
+      },
+      {
+        name: "Backend",
+        items: [
+          { name: "Node.js" },
+          { name: "Express" },
+          { name: "GraphQL" },
+          { name: "PostgreSQL" },
+          { name: "MongoDB" },
+          { name: "JWT" }
+        ]
+      },
+      {
+        name: "Tools & Craft",
+        items: [
+          { name: "Figma" },
+          { name: "Git" },
+          { name: "Docker" },
+          { name: "AWS" },
+          { name: "Vite" },
+          { name: "PostgreSQL" }
+        ]
+      }
+    ]
+  },
+  projects: {
+    title: "Projects",
+    subtitle: "College & personal projects — learning by building.",
+    items: [
+      {
+        id: "p1",
+        title: "Noir Commerce",
+        category: "E-commerce",
+        year: "2025",
+        description: "A charcoal storefront with cinematic product reveals, inventory sync, and checkout under 2s TTI.",
+        tags: ["React", "Node", "Stripe", "Motion"],
+        image: "linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 40%, #0d0d0d 100%)",
+        liveUrl: "https://example.com",
+        repoUrl: "https://github.com",
+        featured: true
+      },
+      {
+        id: "p2",
+        title: "Ash Analytics",
+        category: "SaaS Dashboard",
+        year: "2025",
+        description: "Realtime metrics UI with densest-to-clearest information hierarchy and keyboard-first navigation.",
+        tags: ["TypeScript", "WebSockets", "D3"],
+        image: "linear-gradient(160deg, #111 0%, #3a3a3a 50%, #161616 100%)",
+        liveUrl: "",
+        repoUrl: "https://github.com",
+        featured: true
+      },
+      {
+        id: "p3",
+        title: "Frame Studio",
+        category: "Creative Tool",
+        year: "2024",
+        description: "Browser-based storyboard editor with scrubbable timelines and export pipelines for agencies.",
+        tags: ["Canvas", "Express", "S3"],
+        image: "linear-gradient(120deg, #0c0c0c 0%, #242424 45%, #101010 100%)",
+        liveUrl: "https://example.com",
+        repoUrl: "",
+        featured: false
+      },
+      {
+        id: "p4",
+        title: "Pulse Health",
+        category: "Healthcare",
+        year: "2024",
+        description: "Patient portal redesign focused on calm UI, accessibility, and encrypted messaging.",
+        tags: ["React", "JWT"],
+        image: "linear-gradient(145deg, #151515 0%, #2a2a2a 55%, #0a0a0a 100%)",
+        liveUrl: "",
+        repoUrl: "",
+        featured: false
+      }
+    ]
+  },
+  contact: {
+    title: "Contact",
+    subtitle: "Open to internships and beginner roles — feel free to reach out. I usually reply within a day.",
+    successMessage: "Thanks for writing! I'll get back to you soon."
+  }
+};

@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { readJson, writeJson } from '../db.js';
 import { requireAuth } from '../middleware/auth.js';
+import { defaultContent } from './defaultContent.js';
 
 const router = Router();
 
 async function getContent() {
-  return readJson('content.json', {});
+  return readJson('content.json', defaultContent);
 }
 
 router.get('/', async (_req, res) => {
